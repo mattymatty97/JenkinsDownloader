@@ -30,6 +30,9 @@ wget=$(which wget)
 #the path to the jq executable ( typically needs to install jq )
 jq=$(which jq)
 
+#the path to the tr executable ( typically no change is needed )
+tr=$(which tr)
+
 
 #this will keep track of the last downloaded file ( if you delete the file or want to reset it, simply put this value to 0 )
 actual=0
@@ -54,9 +57,14 @@ if [ "$wget" == "" ]; then
     _exit 1
 fi
 
+if [ "$tr" == "" ]; then
+    >&2 echo missing tr
+    _exit 2
+fi
+
 if [ "$jq" == "" ]; then
     >&2 echo missing jq
-    _exit 2 
+    _exit 3 
 fi
 
 if [ "$channel" != "Stable" ] && [ "$channel" != "Succesfull" ] && [ "$channel" 1= "Last" ] && [ "$channel" 1= "Custom" ]; then
@@ -81,21 +89,21 @@ json=$($wget --check-certificate=quiet -O - $jenkins/$channel/api/json?tree=arti
 
 if [ "$json" == "" ]; then
     >&2 echo -e "\nError cannot get the download page:\n$jenkins/$channel\nCheck the link you provided\n"
-    _exit 3
+    _exit 4
 fi
 
 echo -e "\n$channel:\n"
 
 $jq . <<< $json 
 
-latest_id=$($jq .id <<< $json | tr -d '[[:space:]]"')
+latest_id=$($jq .id <<< $json | $tr -d '[[:space:]]"')
 
 if (( $actual < $latest_id )); then
     act_json=$($wget --check-certificate=quiet -O - $jenkins/$actual/api/json?tree=artifacts[relativePath,fileName],id 2>/dev/null)
 
     if [ "$act_json" == "" ] && [ $actual -ne 0 ]; then
         >&2 echo -e "\nError cannot get the download page:\n$jenkins/$actual\nCheck the link you provided\n"
-        _exit 3 
+        _exit 5 
     fi
 
     echo -e "\nActual:\n"
@@ -103,16 +111,16 @@ if (( $actual < $latest_id )); then
     $jq . <<< $act_json
     
     for i in ${artifacts[@]}; do
-        act_filename=$($jq .artifacts[$i].fileName <<< $act_json | tr -d '"')
-        latest_filename=$($jq .artifacts[$i].fileName <<< $json | tr -d '"')
-        latest_page=$jenkins/lastStableBuild/artifact/$($jq .artifacts[$i].relativePath <<< $json | tr -d '"')
+        act_filename=$($jq .artifacts[$i].fileName <<< $act_json | $tr -d '"')
+        latest_filename=$($jq .artifacts[$i].fileName <<< $json | $tr -d '"')
+        latest_page=$jenkins/lastStableBuild/artifact/$($jq .artifacts[$i].relativePath <<< $json | $tr -d '"')
         if [ "$act_filename" != "" ] && [ -e $savePath/$act_filename ]; then
             if [ -w $savePath/$act_filename ];then
                 echo -e "\nremoving $savePath/$act_filename\n"
                 rm $save_path/$act_filename
             else
                 echo cannot remove $save_path/$act_filename
-                _exit 4
+                _exit 6
             fi
         fi
         echo -e "\ndownloading $latest_filename\nfrom $latest_page\n"
@@ -121,13 +129,13 @@ if (( $actual < $latest_id )); then
     sed -i "s/actual=[[:digit:]]*$/actual=$latest_id/g" $me
 else if (( $actual > $latest_id )); then
         >&2 echo -e "\nSomething is wrong:\n\tActual ID:\t$actual\n\tLast ID:\t$latest_id\nProbably you changed the channel,\nplease reset the \"actual=$actual\" line to \"actual=0\"\nor revert the changes.\n"
-        _exit 5
+        _exit 7
     else 
         for i in ${artifacts[@]}; do
-        latest_filename=$($jq .artifacts[$i].fileName <<< $json | tr -d '"')
+        latest_filename=$($jq .artifacts[$i].fileName <<< $json | $tr -d '"')
         if ! [ -e $savePath/$latest_filename ]; then
             >&2 echo -e "\nSomething is wrong:\n\tActual ID:\t$actual\n\tLast ID:\t$latest_id\nBut the file is missing.\nProbably you changed the SavePath, moved the script or deleted/moved the file,\nplease reset the \"actual=$actual\" line to \"actual=0\"\nor revert the changes.\n"
-            _exit 6
+            _exit 8
         fi
     done
         echo -e "\nPlugin is already the newest Version\n"
