@@ -34,7 +34,7 @@ jq=$(which jq)
 tr=$(which tr)
 
 
-#this will keep track of the last downloaded file ( if you delete the file or want to reset it, simply put this value to 0 )
+#this will keep track of the last downloaded file ( if you delete the file or want to reset it, simply put this value to 0 or run with -r )
 actual=0
 
 
@@ -81,6 +81,10 @@ else if [ "$channel" == "Succesfull" ]; then
             channel=$custom
         fi
     fi
+fi
+
+if [ "$1" == "-r" ]; then
+    actual=0
 fi
 
 save_path=$(realpath $savePath)
