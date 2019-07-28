@@ -1,9 +1,10 @@
 #!/bin/bash
-########################################################################
-#### This script has been written by The__Matty ( mattymatty#9621 ) ####
-#### It is under copyrights on GitHub, you cannot share it publicly ####
-#### whitout giving credits to the creator                          ####
-########################################################################
+################################################################################
+#### This script has been written by Matteo Francesconi ( mattymatty#9621 ) ####
+#### It is under copyrights on GitHub, you cannot share it publicly whitout ####
+#### giving credits to the creator.                                         ####
+#### https://github.com/mattymatty97/JenkinsDownloader/                     ####
+################################################################################
 
 #the path to the jenkins job ( download page )
 jenkins=""
@@ -11,18 +12,20 @@ jenkins=""
 #the path to where to save the file ( if relative is relative to this script location )
 savePath="."
 
+
 #the download channel: ( Stable, Succesfull, Last, Custom ) it's suggested to keep Stable 
 channel="Stable"
 
 #the Custom channel/version to use ( typically is the Release channel, but not every Jenkis has it ), modify only if channel is set to "Custom"
 custom="Release"
 
-#the artifact list to download ( typically no change is needed, if there are more than one list them)
+
+#the artifact list to download ( typically no change is needed, if there are more than one list them separated by space eg: "artifacts=( 0 1 3 )" )
 artifacts=(0)
+
 
 #the path to the wget executable ( typically no change is needed )
 wget=$(which wget)
-
 
 #the path to the jq executable ( typically needs to install jq )
 jq=$(which jq)
