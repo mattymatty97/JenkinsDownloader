@@ -13,3 +13,5 @@ a bash script for easly download/update Jenkis Artifacts
   
 ## To reset the script:
   - modify the "**actual**" variable to be `0`
+### Or
+  - run the script with `-r`
