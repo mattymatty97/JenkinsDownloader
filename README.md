@@ -1,15 +1,15 @@
 # JenkinsDownloader
 a bash script for easly download/update Jenkis Artifacts
 
-To use:
-  - Download the file on your Linux machine
-  - Install jq needed to parse jsons files
-  - open the script and modify the starting lines with the correct parameters ( jenkins link, artifact ordinal position, channel )
-  - set the correct SavePath
-  - run it
+## To use:
+  1. Download the file on your **Linux** machine
+  1. Install **jq** needed to parse **jsons** files
+  1. open the script and modify the starting lines with the correct parameters ( jenkins link, artifact ordinal position, channel )
+  1. set the correct **SavePath**
+  1. run it
 
-To update:
+## To update:
   - just re-run the script without any modification
   
-To reset the script:
-  - modify the "actual" variable to be '0'
+## To reset the script:
+  - modify the "**actual**" variable to be `0`
